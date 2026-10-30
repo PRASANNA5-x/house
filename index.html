@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Warehouse Catalogue System</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 30px;
+            background: lightgray;
+        }
+
+        input, select, button {
+            padding: 8px;
+            margin: 5px;
+        }
+
+        button {
+            background: green;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background: lightblue;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Warehouse Catalogue Management</h2>
+
+    <input type="number" id="pid" placeholder="Product ID">
+
+    <input type="text" id="pname" placeholder="Product Name">
+
+    <input type="number" id="price" placeholder="Price">
+
+    <select id="warehouse">
+        <option value="">Select Warehouse</option>
+        <option value="Warehouse 1">Warehouse 1</option>
+        <option value="Warehouse 2">Warehouse 2</option>
+    </select>
+
+    <br>
+
+    <button onclick="addProduct()">Add Product</button>
+    <button onclick="updateProduct()">Update Product</button>
+
+    <h3>Product List</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Warehouse</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody id="productTable"></tbody>
+    </table>
+
+    <script>
+
+        // Array to store products
+        let products = [];
+
+        // ADD PRODUCT
+        function addProduct() {
+
+            let id = document.getElementById("pid").value;
+            let name = document.getElementById("pname").value.trim();
+            let price = Number(document.getElementById("price").value);
+            let warehouse = document.getElementById("warehouse").value;
+
+            // Validation
+            if (id === "" || Number(id) <= 0 ||
+                !Number.isInteger(Number(id)) ||
+                name === "" ||
+                document.getElementById("price").value === "" ||
+                price <= 0 || warehouse === "") {
+
+                alert("Invalid entry! Enter valid ID, Name, Price above 0 and Warehouse");
+                return;
+            }
+
+            // Check duplicate ID
+            for (let p of products) {
+                if (p.id === id) {
+                    alert("Product ID already exists!");
+                    return;
+                }
+            }
+
+            products.push({id, name, price, warehouse});
+
+            alert("Product Added Successfully");
+
+            displayProducts();
+            clearFields();
+        }
+
+        // DISPLAY PRODUCTS
+        function displayProducts() {
+
+            let table = document.getElementById("productTable");
+            table.innerHTML = "";
+
+            products.forEach(function(p, index) {
+
+                let row = table.insertRow();
+
+                row.insertCell(0).textContent = p.id;
+                row.insertCell(1).textContent = p.name;
+                row.insertCell(2).textContent = p.price;
+                row.insertCell(3).textContent = p.warehouse;
+
+                let actions = row.insertCell(4);
+
+                let editBtn = document.createElement("button");
+                editBtn.textContent = "Edit";
+                editBtn.onclick = function() {
+                    editProduct(index);
+                };
+
+                let deleteBtn = document.createElement("button");
+                deleteBtn.textContent = "Delete";
+                deleteBtn.onclick = function() {
+                    deleteProduct(index);
+                };
+
+                actions.appendChild(editBtn);
+                actions.appendChild(deleteBtn);
+            });
+        }
+
+        // EDIT PRODUCT
+        function editProduct(index) {
+
+            let p = products[index];
+
+            document.getElementById("pid").value = p.id;
+            document.getElementById("pname").value = p.name;
+            document.getElementById("price").value = p.price;
+            document.getElementById("warehouse").value = p.warehouse;
+        }
+
+        // UPDATE PRODUCT
+        function updateProduct() {
+
+            let id = document.getElementById("pid").value;
+            let name = document.getElementById("pname").value.trim();
+            let priceText = document.getElementById("price").value;
+            let price = Number(priceText);
+            let warehouse = document.getElementById("warehouse").value;
+
+            if (id === "" || Number(id) <= 0 ||
+                !Number.isInteger(Number(id)) ||
+                name === "" || priceText === "" ||
+                price <= 0 || warehouse === "") {
+
+                alert("Invalid Entry!");
+                return;
+            }
+
+            let product = products.find(p => p.id === id);
+
+            if (product) {
+                product.name = name;
+                product.price = price;
+                product.warehouse = warehouse;
+
+                alert("Product Updated Successfully");
+
+                displayProducts();
+                clearFields();
+            }
+            else {
+                alert("Product ID Not Found");
+            }
+        }
+
+        // DELETE PRODUCT
+        function deleteProduct(index) {
+
+            products.splice(index, 1);
+
+            alert("Product Deleted Successfully");
+
+            displayProducts();
+        }
+
+        // CLEAR INPUT FIELDS
+        function clearFields() {
+
+            document.getElementById("pid").value = "";
+            document.getElementById("pname").value = "";
+            document.getElementById("price").value = "";
+            document.getElementById("warehouse").value = "";
+        }
+
+    </script>
+
+</body>
+</html>
